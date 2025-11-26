@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FormCard from '../components/FormCard'
 import Swal from 'sweetalert2'
+import logo from '/logo_fixhub.png' 
 
 export default function Login() {
   const navigate = useNavigate()
@@ -50,7 +51,7 @@ export default function Login() {
       <FormCard>
         <div className="text-center mb-4">
           <div className="flex items-center justify-center space-x-2">
-            <img src="logo_fixhub.png" className="w-12" alt="logo" />
+            <img src={logo} className="w-12" alt="logo" />
             <span className="text-2xl font-bold text-[var(--primary)]">FixHub</span>
           </div>
         </div>
