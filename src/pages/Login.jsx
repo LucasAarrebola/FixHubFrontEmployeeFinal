@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import FormCard from '../components/FormCard'
 import Swal from 'sweetalert2'
 
+// Import da imagem
+import logo from '../assets/logo_fixhub.png'
+
 export default function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -50,7 +53,7 @@ export default function Login() {
       <FormCard>
         <div className="text-center mb-4">
           <div className="flex items-center justify-center space-x-2">
-            <img src="logo_fixhub.png" className="w-12" alt="logo" />
+            <img src={logo} className="w-12" alt="logo" />
             <span className="text-2xl font-bold text-[var(--primary)]">FixHub</span>
           </div>
         </div>
@@ -66,6 +69,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div>
             <label className="label">Senha</label>
             <input
@@ -75,11 +79,13 @@ export default function Login() {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
+
             <div className="w-full flex justify-center mt-1">
               <div className="flex flex-col items-center space-y-2">
                 <Link to="/forgot-password" className="text-sm text-[var(--primary)] text-center">
                   Esqueci minha senha
                 </Link>
+
                 <button type="submit" className="btn-primary px-4 py-1">
                   Login
                 </button>
