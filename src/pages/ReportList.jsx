@@ -30,6 +30,8 @@ export default function ReportList() {
           }
         );
 
+        if (!res.ok) throw new Error(`Erro: ${res.status}`);
+
         const raw = await res.text();
         let data = [];
         try {
@@ -38,15 +40,18 @@ export default function ReportList() {
           console.error('Erro ao analisar JSON:', err);
         }
 
-        if (!res.ok) throw new Error(`Erro: ${res.status}`);
-
         const normalized = Array.isArray(data)
-          ? data.map((item) => ({ ...item, id: item.id || item._id }))
+          ? data.map((item) => ({
+              ...item,
+              id: item.id || item._id,
+            }))
           : [];
 
-        // FILTRA PELO STATUS ESCOLHIDO, se não for "TODOS"
+        // Filtra pelo status escolhido
         const filteredByStatus =
-          filter === 'TODOS' ? normalized : normalized.filter((t) => t.status === filter);
+          filter === 'TODOS'
+            ? normalized
+            : normalized.filter((t) => t.status === filter);
 
         setTickets(filteredByStatus);
       } catch (err) {
@@ -101,6 +106,7 @@ export default function ReportList() {
     }
   };
 
+  // Helpers para status
   function getStatusLabel(status) {
     switch (status) {
       case 'PENDENTE':
@@ -109,6 +115,8 @@ export default function ReportList() {
         return 'Em andamento';
       case 'CONCLUIDO':
         return 'Concluído';
+      case 'REPROVADO':
+        return 'Reprovado';
       default:
         return status;
     }
@@ -117,11 +125,13 @@ export default function ReportList() {
   function getStatusColor(status) {
     switch (status) {
       case 'PENDENTE':
-        return 'text-slate-500'; // cinza
+        return 'text-slate-500';
       case 'EM_ANDAMENTO':
         return 'text-yellow-600';
       case 'CONCLUIDO':
         return 'text-green-600';
+      case 'REPROVADO':
+        return 'text-red-600';
       default:
         return 'text-slate-600';
     }
@@ -135,6 +145,8 @@ export default function ReportList() {
         return 'bg-yellow-100';
       case 'CONCLUIDO':
         return 'bg-green-100';
+      case 'REPROVADO':
+        return 'bg-red-100';
       default:
         return 'bg-slate-100';
     }
@@ -148,6 +160,8 @@ export default function ReportList() {
         return <FaExclamationCircle />;
       case 'CONCLUIDO':
         return <FaCheckCircle />;
+      case 'REPROVADO':
+        return <FaExclamationCircle />;
       default:
         return <FaClock />;
     }
@@ -171,30 +185,32 @@ export default function ReportList() {
         <FaClipboardList className="text-blue-600" /> Seus Tickets
       </motion.h1>
 
-      {/* FILTRO AZUL */}
+      {/* Filtro */}
       <div className="flex gap-2 mb-5">
-        {['TODOS', 'PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO'].map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilter(status)}
-            className={`px-3 py-1 rounded-lg border ${
-              filter === status
-                ? 'bg-blue-200 border-blue-500 text-blue-800'
-                : 'bg-white border-blue-300 text-blue-800'
-            }`}
-          >
-            {getStatusLabel(status)}
-          </button>
-        ))}
+        {['TODOS', 'PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO', 'REPROVADO'].map(
+          (status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              className={`px-3 py-1 rounded-lg border ${
+                filter === status
+                  ? 'bg-blue-200 border-blue-500 text-blue-800'
+                  : 'bg-white border-blue-300 text-blue-800'
+              }`}
+            >
+              {getStatusLabel(status)}
+            </button>
+          )
+        )}
       </div>
 
-      {/* LISTA DE TICKETS */}
+      {/* Lista de tickets */}
       {tickets.length === 0 ? (
-        filter === 'TODOS' ? (
-          <p className="text-slate-600">Você ainda não criou nenhum ticket.</p>
-        ) : (
-          <p className="text-slate-600">Nenhum ticket encontrado para o filtro selecionado.</p>
-        )
+        <p className="text-slate-600">
+          {filter === 'TODOS'
+            ? 'Você ainda não criou nenhum ticket.'
+            : 'Nenhum ticket encontrado para o filtro selecionado.'}
+        </p>
       ) : (
         <div className="grid gap-4">
           {tickets.map((ticket) => (
@@ -214,8 +230,10 @@ export default function ReportList() {
                 </p>
                 <p className="text-xs text-slate-400 mt-2">
                   Criado em:{' '}
-                  {ticket.createdAt
-                    ? new Date(ticket.createdAt).toLocaleDateString('pt-BR')
+                  {ticket.dataTicket
+                    ? new Date(ticket.dataTicket).toLocaleString('pt-BR', {
+                        timeZone: 'America/Sao_Paulo',
+                      })
                     : 'Data não informada'}
                 </p>
               </div>

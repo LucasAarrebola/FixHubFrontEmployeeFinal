@@ -130,6 +130,22 @@ export default function ReportDetail() {
         </div>
       </section>
 
+      {/* Prioridade */}
+      <section className="mt-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-1">Prioridade</h3>
+        <div
+          className={`
+            p-3 rounded-xl border shadow-sm font-semibold
+            ${ticket.prioridade === "BAIXA" ? "bg-green-100 text-green-700 border-green-300" : ""}
+            ${ticket.prioridade === "REGULAR" ? "bg-yellow-100 text-yellow-600 border-yellow-300" : ""}
+            ${ticket.prioridade === "IMPORTANTE" ? "bg-orange-100 text-orange-600 border-orange-300" : ""}
+            ${ticket.prioridade === "URGENTE" ? "bg-red-100 text-red-600 border-red-300" : ""}
+          `}
+        >
+          {ticket.prioridade || "—"}
+        </div>
+      </section>
+
       {/* Status */}
       <section className="mt-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-2">Status</h3>

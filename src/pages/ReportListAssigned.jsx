@@ -168,8 +168,8 @@ export default function ReportListAssigned() {
 
                 <p className="text-xs text-slate-400 mt-2">
                   Criado em:{' '}
-                  {ticket.dataCriacao
-                    ? new Date(ticket.dataCriacao).toLocaleDateString('pt-BR')
+                  {ticket.dataCriacaoTicket
+                    ? new Date(ticket.dataCriacaoTicket).toLocaleDateString('pt-BR')
                     : 'Data não informada'}
                 </p>
               </div>
