@@ -100,6 +100,185 @@ export default function ReportDetailOrganizado() {
     fetchTicket();
   }, [id]);
 
+  // -------------------------------------------------------
+  // FUNÇÕES DOS BOTÕES
+  // -------------------------------------------------------
+
+  // Assumir
+  const assumirTicket = async () => {
+    const token = safeToken();
+    if (!token) return;
+
+    try {
+      setSubmitting(true);
+
+      const res = await fetch(
+        `https://projeto-integrador-fixhub.onrender.com/api/fixhub/resolucoes/assumir?idTicketMestre=${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error();
+
+      Swal.fire("Sucesso!", "Você assumiu o ticket.", "success");
+
+      setTicket((prev) => ({
+        ...prev,
+        status: "EM_ANDAMENTO",
+        nomeFuncionario: funcionarioNome || prev.nomeFuncionario || "Funcionário",
+      }));
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Erro", "Não foi possível assumir o ticket.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Renunciar
+  const renunciarTicket = async () => {
+    const token = safeToken();
+    if (!token) return;
+
+    try {
+      setSubmitting(true);
+
+      const res = await fetch(
+        `https://projeto-integrador-fixhub.onrender.com/api/fixhub/resolucoes/renunciar?idTicketMestre=${id}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) throw new Error();
+
+      Swal.fire("Sucesso!", "Ticket renunciado e voltou para PENDENTE.", "success");
+
+      setTicket((prev) => ({
+        ...prev,
+        status: "PENDENTE",
+        nomeFuncionario: null,
+        descricaoResolucao: null,
+        dataResolucao: null,
+      }));
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Erro", "Não foi possível renunciar.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Reprovar
+  const reprovarTicket = async () => {
+    const token = safeToken();
+    if (!token) return;
+
+    const { value: motivo } = await Swal.fire({
+      title: "Motivo da reprovação",
+      input: "textarea",
+      inputPlaceholder: "Explique por que o ticket foi reprovado...",
+      showCancelButton: true,
+      inputValidator: (value) => (!value?.trim() ? "O motivo é obrigatório." : null),
+    });
+
+    if (!motivo) return;
+
+    try {
+      setSubmitting(true);
+
+      const res = await fetch(
+        `https://projeto-integrador-fixhub.onrender.com/api/fixhub/resolucoes/reprovar?idTicketMestre=${id}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) throw new Error();
+
+      Swal.fire("Reprovado!", "O ticket foi marcado como reprovado.", "success");
+
+      setTicket((prev) => ({
+        ...prev,
+        status: "REPROVADO",
+        motivoReprovacao: motivo,
+      }));
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Erro", "Não foi possível reprovar o ticket.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Finalizar
+  const finalizarTicket = async () => {
+    const token = safeToken();
+    if (!token) return;
+
+    const { value: escolha } = await Swal.fire({
+      title: "O ticket foi aprovado ou reprovado?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Aprovar",
+      denyButtonText: "Reprovar",
+    });
+
+    if (escolha === undefined) return;
+    if (escolha === false) return await reprovarTicket();
+
+    const { value: descricao } = await Swal.fire({
+      title: "Descrição da resolução",
+      input: "textarea",
+      inputPlaceholder: "Descreva o que foi feito para resolver...",
+      showCancelButton: true,
+      inputValidator: (value) => (!value?.trim() ? "A descrição é obrigatória." : null),
+    });
+
+    if (!descricao) return;
+
+    try {
+      setSubmitting(true);
+  if (loading) return <div className="text-center mt-10 text-gray-500">Carregando...</div>;
+  if (!ticket) return <div className="text-center mt-10 text-gray-500">Nenhum ticket encontrado.</div>;
+
+      const res = await fetch(
+        "https://projeto-integrador-fixhub.onrender.com/api/fixhub/resolucoes/resolver",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ idTicket: id, descricao }),
+        }
+      );
+
+      if (!res.ok) throw new Error();
+
+      Swal.fire("Concluído!", "O ticket foi finalizado com sucesso.", "success");
+
+      setTicket((prev) => ({
+        ...prev,
+        status: "CONCLUIDO",
+        descricaoResolucao: descricao,
+        nomeFuncionario: funcionarioNome || "Funcionário",
+        dataResolucao: new Date().toISOString(),
+      }));
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Erro", "Não foi possível finalizar o ticket.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) return <div className="text-center mt-10 text-gray-500">Carregando...</div>;
   if (!ticket) return <div className="text-center mt-10 text-gray-500">Nenhum ticket encontrado.</div>;
 
@@ -243,6 +422,39 @@ export default function ReportDetailOrganizado() {
           />
         </div>
       )}
+
+      {/* BOTÕES — agora com espaçamento mt-8 */}
+      <div className="mt-8 mb-4 flex gap-3 justify-end">
+        {ticket.status === "PENDENTE" && (
+          <button
+            onClick={assumirTicket}
+            disabled={submitting}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            {submitting ? "Aguarde..." : "Assumir Ticket"}
+          </button>
+        )}
+
+        {ticket.status === "EM_ANDAMENTO" && (
+          <>
+            <button
+              onClick={renunciarTicket}
+              disabled={submitting}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
+            >
+              {submitting ? "Aguarde..." : "Renunciar"}
+            </button>
+
+            <button
+              onClick={finalizarTicket}
+              disabled={submitting}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+            >
+              {submitting ? "Finalizando..." : "Finalizar Ticket"}
+            </button>
+          </>
+        )}
+      </div>  
     </div>
   );
 }

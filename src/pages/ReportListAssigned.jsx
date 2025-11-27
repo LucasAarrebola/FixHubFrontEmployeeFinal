@@ -182,6 +182,39 @@ export default function ReportListAssigned() {
                 <span className={`flex items-center gap-1 font-medium text-sm ${getStatusColor(ticket.status)}`}>
                   <FaClock /> {getStatusLabel(ticket.status)}
                 </span>
+
+                {/* BOTÕES — agora com espaçamento mt-8 */}
+                <div className="mt-8 mb-4 flex gap-3 justify-end">
+                  {ticket.status === "PENDENTE" && (
+                    <button
+                      onClick={assumirTicket}
+                      disabled={submitting}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+                    >
+                      {submitting ? "Aguarde..." : "Assumir Ticket"}
+                    </button>
+                  )}
+
+                  {ticket.status === "EM_ANDAMENTO" && (
+                    <>
+                      <button
+                        onClick={renunciarTicket}
+                        disabled={submitting}
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
+                      >
+                        {submitting ? "Aguarde..." : "Renunciar"}
+                      </button>
+
+                      <button
+                        onClick={finalizarTicket}
+                        disabled={submitting}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+                      >
+                        {submitting ? "Finalizando..." : "Finalizar Ticket"}
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}
