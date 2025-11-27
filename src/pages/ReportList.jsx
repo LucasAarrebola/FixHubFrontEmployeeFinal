@@ -173,9 +173,9 @@ export default function ReportList() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       <motion.h1
-        className="text-2xl font-bold mb-6 text-slate-800 flex items-center gap-2"
+        className="text-xl sm:text-2xl font-bold mb-6 text-slate-800 flex items-center gap-2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -183,13 +183,13 @@ export default function ReportList() {
       </motion.h1>
 
       {/* Filtro */}
-      <div className="flex gap-2 mb-5 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-gray-200">
+      <div className="flex flex-wrap gap-2 mb-5 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-gray-200">
         {['TODOS', 'PENDENTE', 'EM_ANDAMENTO', 'CONCLUIDO', 'REPROVADO'].map(
           (status) => (
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`flex-shrink-0 px-3 py-1 rounded-lg border ${
+              className={`flex-shrink-0 px-3 py-1 rounded-lg border text-sm sm:text-base ${
                 filter === status
                   ? 'bg-blue-200 border-blue-500 text-blue-800'
                   : 'bg-white border-blue-300 text-blue-800'
@@ -203,7 +203,7 @@ export default function ReportList() {
 
       {/* Lista de tickets */}
       {tickets.length === 0 ? (
-        <p className="text-slate-600">
+        <p className="text-slate-600 text-sm sm:text-base">
           {filter === 'TODOS'
             ? 'Você ainda não criou nenhum ticket.'
             : 'Nenhum ticket encontrado para o filtro selecionado.'}
@@ -216,20 +216,20 @@ export default function ReportList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 flex justify-between items-center hover:shadow-md transition cursor-pointer"
+              className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:shadow-md transition cursor-pointer"
               onClick={(e) => {
                 if (e.target.closest('a') || e.target.closest('button')) return;
                 navigate(`/reports/${ticket.id || ticket._id}`);
               }}
             >
-              <div>
-                <h2 className="font-semibold text-slate-800">
+              <div className="mb-3 sm:mb-0 sm:mr-4 flex-1">
+                <h2 className="font-semibold text-slate-800 text-base sm:text-lg">
                   {ticket.title || ticket.localizacao || 'Ticket sem título'}
                 </h2>
                 <p className="text-sm text-slate-500 mt-1">
                   {ticket.description || ticket.descricaoTicketUsuario || 'Sem descrição'}
                 </p>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs sm:text-sm text-slate-400 mt-2">
                   Criado em:{' '}
                   {ticket.dataTicket
                     ? new Date(ticket.dataTicket).toLocaleString('pt-BR', {
@@ -239,9 +239,9 @@ export default function ReportList() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                 <span
-                  className={`flex items-center gap-1 font-medium text-sm px-2 py-1 rounded-lg ${getStatusBg(
+                  className={`flex items-center gap-1 font-medium text-sm sm:text-base px-2 py-1 rounded-lg ${getStatusBg(
                     ticket.status
                   )} ${getStatusColor(ticket.status)}`}
                 >
@@ -272,7 +272,7 @@ export default function ReportList() {
       <div className="mt-6 flex justify-end">
         <Link
           to="/reports/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow text-sm sm:text-base"
         >
           Criar Novo Ticket
         </Link>
